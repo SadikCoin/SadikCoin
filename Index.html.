@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tesla Mining Test</title>
+</head>
+<body>
+    <h1>Tesla Bitcoin Mining Test</h1>
+    <button onclick="startMining()">Start Mining</button>
+    <p id="status">Status: Idle</p>
+    <p id="hash"></p>
+
+    <script>
+        function sha256(message) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(message);
+            return crypto.subtle.digest('SHA-256', data).then((hash) => {
+                return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+            });
+        }
+
+        async function startMining() {
+            document.getElementById('status').innerText = 'Status: Mining...';
+            let prefix = "0000"; // Beispiel für die Anzahl der führenden Nullen
+            let nonce = 0;
+            let hash = "";
+            while (!hash.startsWith(prefix)) {
+                nonce++;
+                hash = await sha256("blockdata" + nonce);
+                document.getElementById('hash').innerText = `Hash: ${hash} (Nonce: ${nonce})`;
+            }
+            document.getElementById('status').innerText = 'Status: Hash gefunden!';
+        }
+    </script>
+</body>
+</html>
